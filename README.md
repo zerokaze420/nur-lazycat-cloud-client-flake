@@ -1,37 +1,60 @@
-# nur-packages-template
-
-**A template for [NUR](https://github.com/nix-community/NUR) repositories**
-
-## Setup
-
-1. Click on [Use this template](https://github.com/nix-community/nur-packages-template/generate) to start a repo based on this template. (Do _not_ fork it.)
-2. Add your packages to the [pkgs](./pkgs) directory and to
-   [default.nix](./default.nix)
-   * Remember to mark the broken packages as `broken = true;` in the `meta`
-     attribute, or travis (and consequently caching) will fail!
-   * Library functions, modules and overlays go in the respective directories
-3. Choose your CI: Depending on your preference you can use github actions (recommended) or [Travis ci](https://travis-ci.com).
-   - Github actions: Change your NUR repo name and optionally add a cachix name in [.github/workflows/build.yml](./.github/workflows/build.yml) and change the cron timer
-     to a random value as described in the file
-   - Travis ci: Change your NUR repo name and optionally your cachix repo name in 
-   [.travis.yml](./.travis.yml). Than enable travis in your repo. You can add a cron job in the repository settings on travis to keep your cachix cache fresh
-5. Change your travis and cachix names on the README template section and delete
-   the rest
-6. [Add yourself to NUR](https://github.com/nix-community/NUR#how-to-add-your-own-repository)
-
-## README template
-
-# nur-packages
+# nur-lazycat-cloud-client-flake
 
 **My personal [NUR](https://github.com/nix-community/NUR) repository**
 
-<!-- Remove this if you don't use github actions -->
-![Build and populate cache](https://github.com/<YOUR-GITHUB-USER>/nur-packages/workflows/Build%20and%20populate%20cache/badge.svg)
+NUR packages for the [LazyCat Cloud desktop client](https://lazycat.cloud)
+(懒猫微服), a micro-server platform for personal cloud services.
 
-<!--
-Uncomment this if you use travis:
+## Packages
 
-[![Build Status](https://travis-ci.com/<YOUR_TRAVIS_USERNAME>/nur-packages.svg?branch=master)](https://travis-ci.com/<YOUR_TRAVIS_USERNAME>/nur-packages)
--->
-[![Cachix Cache](https://img.shields.io/badge/cachix-<YOUR_CACHIX_CACHE_NAME>-blue.svg)](https://<YOUR_CACHIX_CACHE_NAME>.cachix.org)
+| Attribute | Description |
+|-----------|-------------|
+| `lazycat-cloud-client` | LazyCat Cloud desktop client (unfree, `x86_64-linux`) |
 
+## Usage
+
+Add NUR to your flake:
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+}
+```
+
+Then either use the package directly:
+
+```nix
+environment.systemPackages = [
+  pkgs.nur.repos.zerokaze420.lazycat-cloud-client
+];
+```
+
+or use the NixOS / Home Manager modules:
+
+```nix
+nur.repos.zerokaze420.nixosModules.lazycat-cloud-client
+nur.repos.zerokaze420.homeModules.lazycat-cloud-client
+```
+
+The package is unfree. Enable it in your configuration, or pass
+`NIXPKGS_ALLOW_UNFREE=1` when using `nix` commands with `--impure`.
+
+## Layout
+
+```text
+default.nix                          # NUR package set entry point
+pkgs/lazycat-cloud-client/default.nix # package expression
+nixos-modules/                       # NixOS module
+home-modules/                        # Home Manager module
+```
+
+## License
+
+The Nix expressions are licensed under the MIT license. The packaged
+LazyCat Cloud client itself is unfree; see the upstream license terms.

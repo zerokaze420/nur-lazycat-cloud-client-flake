@@ -1,5 +1,3 @@
 {
-  # Add your NixOS modules here
-  #
-  # my-module = ./my-module;
+  lazycat-cloud-client = ./lazycat-cloud-client.nix;
 }
